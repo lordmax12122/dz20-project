@@ -126,38 +126,38 @@ var postsContainer = document.getElementById("postsContainer");
 var createPostForm = document.getElementById("createPostForm");
 var linkButton = document.querySelector(".load-button");
 var deletePostButton = document.querySelector(".deletePostButton");
-var posts = []; // Масив для збереження всіх постів із сервера
-var currentIndex = 0; // Індекс поточного поста
-
-// Завантажуємо всі пости з API (MockAPI не підтримує пагінацію за замовчуванням)
+var editPostButton = document.querySelector(".editPostButton");
+var posts = [];
+var currentIndex = 0;
+var postId = null;
 function fetchPosts() {
   return _fetchPosts.apply(this, arguments);
-} // Відобразити пост за currentIndex
+}
 function _fetchPosts() {
-  _fetchPosts = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee4() {
-    var response, _t3;
-    return _regenerator().w(function (_context4) {
-      while (1) switch (_context4.p = _context4.n) {
+  _fetchPosts = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3() {
+    var response, _t2;
+    return _regenerator().w(function (_context3) {
+      while (1) switch (_context3.p = _context3.n) {
         case 0:
-          _context4.p = 0;
-          _context4.n = 1;
+          _context3.p = 0;
+          _context3.n = 1;
           return fetch("https://687cb0eb918b6422432f194e.mockapi.io/posts");
         case 1:
-          response = _context4.v;
-          _context4.n = 2;
+          response = _context3.v;
+          _context3.n = 2;
           return response.json();
         case 2:
-          posts = _context4.v;
-          _context4.n = 4;
+          posts = _context3.v;
+          _context3.n = 4;
           break;
         case 3:
-          _context4.p = 3;
-          _t3 = _context4.v;
-          console.error("Помилка завантаження постів:", _t3);
+          _context3.p = 3;
+          _t2 = _context3.v;
+          console.log(_t2);
         case 4:
-          return _context4.a(2);
+          return _context3.a(2);
       }
-    }, _callee4, null, [[0, 3]]);
+    }, _callee3, null, [[0, 3]]);
   }));
   return _fetchPosts.apply(this, arguments);
 }
@@ -169,19 +169,61 @@ function renderCurrentPost() {
   var post = posts[currentIndex];
   postsContainer.innerHTML = "\n        <div class=\"post\" data-id=\"".concat(post.id, "\">\n            <h2>").concat(post.title, "</h2>\n            <p>").concat(post.content, "</p>\n        </div>\n    ");
 }
-
-// Кнопка "Наступний пост"
+function updatePost(_x, _x2, _x3) {
+  return _updatePost.apply(this, arguments);
+}
+function _updatePost() {
+  _updatePost = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee4(id, title, content) {
+    var response, updatedPost, _t3;
+    return _regenerator().w(function (_context4) {
+      while (1) switch (_context4.p = _context4.n) {
+        case 0:
+          _context4.p = 0;
+          _context4.n = 1;
+          return fetch("https://687cb0eb918b6422432f194e.mockapi.io/posts/".concat(id), {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              title: title,
+              content: content
+            })
+          });
+        case 1:
+          response = _context4.v;
+          _context4.n = 2;
+          return response.json();
+        case 2:
+          updatedPost = _context4.v;
+          return _context4.a(2, updatedPost);
+        case 3:
+          _context4.p = 3;
+          _t3 = _context4.v;
+          console.log(_t3);
+        case 4:
+          return _context4.a(2);
+      }
+    }, _callee4, null, [[0, 3]]);
+  }));
+  return _updatePost.apply(this, arguments);
+}
+editPostButton.addEventListener("click", function () {
+  if (posts.length === 0) return;
+  var post = posts[currentIndex];
+  document.getElementById("titleInput").value = post.title;
+  document.getElementById("contentInput").value = post.content;
+  postId = post.id;
+});
 linkButton.addEventListener("click", function () {
   if (posts.length === 0) return;
   if (currentIndex < posts.length - 1) {
     currentIndex++;
     renderCurrentPost();
   } else {
-    alert("Це останній пост");
+    alert("останній пост");
   }
 });
-
-// Видалення поточного поста
 deletePostButton.addEventListener("click", /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
   var post, response, _t;
   return _regenerator().w(function (_context) {
@@ -202,44 +244,45 @@ deletePostButton.addEventListener("click", /*#__PURE__*/_asyncToGenerator(/*#__P
       case 3:
         response = _context.v;
         if (response.ok) {
-          posts.splice(currentIndex, 1); // Видаляємо з локального масиву
+          posts.splice(currentIndex, 1);
           if (currentIndex > 0) {
-            currentIndex--; // Переходимо до попереднього поста
+            currentIndex--;
           }
           renderCurrentPost();
-        } else {
-          alert("Не вдалося видалити пост");
         }
         _context.n = 5;
         break;
       case 4:
         _context.p = 4;
         _t = _context.v;
-        console.error("Помилка видалення:", _t);
+        console.log(_t);
       case 5:
         return _context.a(2);
     }
   }, _callee, null, [[2, 4]]);
 })));
-
-// Створення нового поста
 createPostForm.addEventListener("submit", /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2(e) {
-    var title, content, response, newPost, _t2;
+    var title, content, updatedPost, response, newPost;
     return _regenerator().w(function (_context2) {
-      while (1) switch (_context2.p = _context2.n) {
+      while (1) switch (_context2.n) {
         case 0:
           e.preventDefault();
           title = document.getElementById("titleInput").value.trim();
           content = document.getElementById("contentInput").value.trim();
-          if (!(!title || !content)) {
-            _context2.n = 1;
+          if (!(createPostForm.dataset.mode === "edit")) {
+            _context2.n = 2;
             break;
           }
-          return _context2.a(2);
+          _context2.n = 1;
+          return updatePost(posts[currentIndex].id, title, content);
         case 1:
-          _context2.p = 1;
-          _context2.n = 2;
+          updatedPost = _context2.v;
+          posts[currentIndex] = updatedPost;
+          _context2.n = 5;
+          break;
+        case 2:
+          _context2.n = 3;
           return fetch("https://687cb0eb918b6422432f194e.mockapi.io/posts", {
             method: "POST",
             headers: {
@@ -250,61 +293,46 @@ createPostForm.addEventListener("submit", /*#__PURE__*/function () {
               content: content
             })
           });
-        case 2:
-          response = _context2.v;
-          if (!response.ok) {
-            _context2.n = 4;
-            break;
-          }
-          _context2.n = 3;
-          return response.json();
         case 3:
+          response = _context2.v;
+          _context2.n = 4;
+          return response.json();
+        case 4:
           newPost = _context2.v;
           posts.push(newPost);
-          currentIndex = posts.length - 1; // Показуємо новий пост
+          currentIndex = posts.length - 1;
+        case 5:
           renderCurrentPost();
           createPostForm.reset();
-          _context2.n = 5;
-          break;
-        case 4:
-          alert("Не вдалося створити пост");
-        case 5:
-          _context2.n = 7;
-          break;
         case 6:
-          _context2.p = 6;
-          _t2 = _context2.v;
-          console.error("Помилка створення поста:", _t2);
-        case 7:
           return _context2.a(2);
       }
-    }, _callee2, null, [[1, 6]]);
+    }, _callee2);
   }));
-  return function (_x) {
+  return function (_x4) {
     return _ref2.apply(this, arguments);
   };
 }());
-
-// Ініціалізація додатку
-(function () {
-  var _startApp = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3() {
-    return _regenerator().w(function (_context3) {
-      while (1) switch (_context3.n) {
+function startApp() {
+  return _startApp.apply(this, arguments);
+}
+function _startApp() {
+  _startApp = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee5() {
+    return _regenerator().w(function (_context5) {
+      while (1) switch (_context5.n) {
         case 0:
-          _context3.n = 1;
+          _context5.n = 1;
           return fetchPosts();
         case 1:
           renderCurrentPost();
         case 2:
-          return _context3.a(2);
+          return _context5.a(2);
       }
-    }, _callee3);
+    }, _callee5);
   }));
-  function startApp() {
-    return _startApp.apply(this, arguments);
-  }
-  return startApp;
-})()();
+  return _startApp.apply(this, arguments);
+}
+;
 },{}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -330,7 +358,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58514" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52746" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

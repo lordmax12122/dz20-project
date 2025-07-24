@@ -137,4 +137,24 @@ button:focus:not(:focus-visible) {
   outline: none;
 }
 
+input {
+  border: none;
+  background-color: none;
+  padding: 15px;
+  border-radius: 5%;
+}
+
+textarea {
+  border: none;
+  background-color: none;
+  padding: 15px;
+  border-radius: 5%;
+}
+
+#createPostForm {
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+}
+
 /*# sourceMappingURL=/style.e308ff8e.css.map */
