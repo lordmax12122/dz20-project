@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "homepage": "https://github.com/lordmax12122/dz20-project",
+  "homepage": "https://lordmax12122.github.io/dz20-project/",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx parcel src/index.html",
-    "build": "parcel build src/index.html --public-url /dz7",
+    "build": "parcel build src/index.html --public-url /dz20-project",
     "deploy": "gh-pages -d dist",
     "predeploy": "npm run build",
     "server": "npx json-server db.json"
